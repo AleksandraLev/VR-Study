@@ -1,95 +1,75 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
 using UnityEngine.InputSystem;
-using System.Threading;
 
 public class PlayerMovement : MonoBehaviour
 {
-    #region Mouse variables
 
-    public enum RotetionAxes
-    {
-        MouseXAndY = 0,
-        MouseY = 1,
-        MouseX = 2,
-    }
-    public RotetionAxes axes = RotetionAxes.MouseXAndY;
-    public float sensitivityHor = 9.0f;
-    public float sensitivityVert = 9.0f;
-    private float minimumVert = -30;
-    private float maximumVert = 40;
-    private float mimimumHor = -20;
-    private float maximumHor = 20;
-    private float _rotationX = 0;
-    private float _rotationY = 0;
+    private bool isDragging = false;
 
-    #endregion
+    public float speed = 12f;
+    public Camera _camera;
 
-    //[SerializeField] private Animation animation;
-    private bool goForward;
-    //public InputAction action;
-    // Start is called before the first frame update
-    CharacterController characterController;
-    public int mouseSensitivity = 1;
+    public CharacterController characterController;
+
+    public float gravity = -9.81f;
+
+    public Transform groundCheck;
+    public float groundDistanse = 0.4f; // Радиус сферы для проверки приземления игрока
+
+    Vector3 velocity;
+    bool isGrounded;
+
     void Start()
     {
-        characterController = GetComponent<CharacterController>();
+        if (_camera == null)
+        {
+            // Если камера не назначена в инспекторе, используем главную камеру
+            _camera = Camera.main;
+        }
     }
 
-    // Update is called once per frame
     void Update()
     {
+        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistanse);
 
-        if (goForward)
+        if (isGrounded && velocity.y < 0)
         {
-            //transform.position += new Vector3(Camera.main.transform.forward.x, y: 0, Camera.main.transform.forward.z) * Time.deltaTime * 3;
-            characterController.Move(new Vector3(Camera.main.transform.forward.x, y: 0, Camera.main.transform.forward.z) * Time.deltaTime * 5);
+            velocity.y = -2f;
         }
-        
-        if (axes == RotetionAxes.MouseXAndY)
+        velocity.y += gravity * Time.deltaTime;
+        characterController.Move(velocity * Time.deltaTime);
+        if (isDragging)
         {
-            _rotationX -= Input.GetAxis("Mouse Y") * sensitivityVert;
-            _rotationY = Mathf.Clamp(_rotationX, minimumVert, maximumVert);
-            float delta = Input.GetAxis("Mouse X") * sensitivityHor;
-            _rotationY = RestrictAngle(transform.localEulerAngles.y + delta, mimimumHor, maximumHor);
-            transform.localEulerAngles = new Vector3(_rotationX * mouseSensitivity, _rotationY, z: 0);
-        }
-        else if (axes == RotetionAxes.MouseX)
-        {
-            _rotationX -= Input.GetAxis("Mouse Y") * sensitivityVert;
-            _rotationX = Mathf.Clamp(_rotationX, minimumVert, maximumVert);
-            transform.localEulerAngles = new Vector3(_rotationX * mouseSensitivity, y: 0, z: 0);
-        }
-        else if (axes == RotetionAxes.MouseY)
-        {
-            float delta = Input.GetAxis("Mouse X") * sensitivityHor;
-            _rotationY = RestrictAngle(transform.localEulerAngles.y + delta, mimimumHor, maximumHor);
-            transform.localEulerAngles = new Vector3(x: 0, _rotationY, z: 0);
-        }
+            // Определяем вектор движения в направлении, куда направлена камера
+            Vector3 forward = _camera.transform.forward;
+            forward.y = 0; // Исключаем движение по вертикали
+            forward.Normalize(); // Нормализуем вектор, чтобы его длина была равна 1
 
+            Vector3 moveDirection = _camera.transform.forward * speed * Time.deltaTime;
+
+
+
+
+
+            // Начало движения
+            characterController.Move(moveDirection + velocity * Time.deltaTime);
+
+        }
 
     }
+
+
     public void Go(InputAction.CallbackContext callbackContext)
     {
         if (callbackContext.phase == InputActionPhase.Started)
         {
-            goForward = true;
+            isDragging = true;
         }
         else if (callbackContext.phase == InputActionPhase.Canceled)
         {
-            goForward = false;
+            isDragging = false;
         }
 
     }
 
-    public static float RestrictAngle(float angle, float angleMin, float angleMax)
-    {
-        if (angle > 100)
-            angle -= 360;
-        else if (angle < -180)
-            angle += 360;
-        return angle;
-    }
 }
