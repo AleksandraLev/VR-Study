@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class AudioTriggerForBulk : MonoBehaviour
 {
-    // Start is called before the first frame update
     public AudioClip Sound;
     void OnTriggerEnter(Collider cld)
     {

@@ -12,13 +12,7 @@ public class CircleMoving : MonoBehaviour
     [SerializeField]
     float rotarion = 1, radius = 2, speed = 0;
     float angle = 0;
-    // Start is called before the first frame update
-    void Start()
-    {
-        //Transform = GetComponent<Transform>();
-    }
 
-    // Update is called once per frame
     void Update()
     {
         character.transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(0, newRotationY, 0), Time.deltaTime * 5);

@@ -48,9 +48,6 @@ public class PlayerMovement : MonoBehaviour
             Vector3 moveDirection = _camera.transform.forward * speed * Time.deltaTime;
 
 
-
-
-
             // Начало движения
             characterController.Move(moveDirection + velocity * Time.deltaTime);
 

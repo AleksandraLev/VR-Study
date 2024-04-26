@@ -18,26 +18,30 @@ public class AudioTriggerForGid : MonoBehaviour
     bool forSecondStartMoving = false;
     bool forSecondTalkind = true;
 
+    public GameObject player;
+
     void Update()
     {
         if (forStartMoving && character.transform.position.z > -11)
         {
             character.transform.position += new Vector3(0, 0, -0.02f);
-            //forEndMoving = true;
         }
         if (character.transform.position.z <= -10 && !forSecondStartMoving && !forThirdTalking && character.transform.position.z < -10.5 && forSecondTalkind)
         {
             character.transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(0, 180, 0), Time.deltaTime * 5);
-            //GetComponent<AudioSource>().clip = Sound2;
-            //GetComponent<AudioSource>().Play();
-            Invoke("ForSecondSound", 2);
+
+            if (Mathf.Abs(player.transform.position.z - character.transform.position.z) < 7)
+            {
+                Invoke("ForSecondSound", 2);
+            }
+            
             //forEndMoving = false; 
         }
         if (forSecondStartMoving && (character.transform.position.z > -63 || character.transform.position.x > -81))
         {
             character.transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(0, 45, 0), Time.deltaTime * 3);
             character.transform.position += new Vector3(-0.02f, 0, -0.01f);
-            
+
         }
         if (character.transform.position.z <= -63 && character.transform.position.x <= -81)
         {
@@ -56,7 +60,7 @@ public class AudioTriggerForGid : MonoBehaviour
             GetComponent<AudioSource>().clip = Sound1;
             GetComponent<AudioSource>().Play();
             Invoke("ForStartMoving_true", 6);
-            forTalking = false;   
+            forTalking = false;
         }
         else if (cld.tag == "Player" && forThirdTalking)
         {
@@ -84,7 +88,6 @@ public class AudioTriggerForGid : MonoBehaviour
     }
     void ForSecondSound()
     {
-        //Debug.Log("Вторая часть экскурсии");
         if (!GetComponent<AudioSource>().isPlaying && GetComponent<AudioSource>().clip != Sound2)
         {
             GetComponent<AudioSource>().clip = Sound2;
@@ -99,7 +102,7 @@ public class AudioTriggerForGid : MonoBehaviour
             GetComponent<AudioSource>().clip = Sound2;
             GetComponent<AudioSource>().Play();
             forSecondStartMoving = true;
-        }     
+        }
     }
     void ForThirdSound()
     {

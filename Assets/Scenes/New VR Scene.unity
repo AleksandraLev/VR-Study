@@ -2940,6 +2940,7 @@ MonoBehaviour:
   Sound3: {fileID: 8300000, guid: 9d8d0cc53b8bfcd4a87f36200a010bb9, type: 3}
   Sound4: {fileID: 8300000, guid: 67fbc9cac552efe48a43391f0e5c24b3, type: 3}
   character: {fileID: 1862188332}
+  player: {fileID: 1275646323}
 --- !u!135 &1533526919
 SphereCollider:
   m_ObjectHideFlags: 0
